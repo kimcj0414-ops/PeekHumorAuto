@@ -2,10 +2,11 @@
 사용법: python scripts/generate.py [개수]   (기본 12개)
 쌓여 있는 초안+승인 글이 6개 이상이면 자동 실행 때는 건너뛴다 (force 인자로 강제).
 """
-import json, os, re, sys, urllib.request
+import json, os, re, sys, time, urllib.error, urllib.request
 
 KEY = os.environ.get("GEMINI_API_KEY", "")
-MODEL = os.environ.get("GEMINI_MODEL") or "gemini-flash-latest"
+MODELS = [m for m in [os.environ.get("GEMINI_MODEL"), "gemini-flash-latest", "gemini-3.6-flash", "gemini-flash-lite-latest"] if m]
+MODEL = MODELS[0]
 QUEUE = "queue.json"
 
 EXAMPLES = """'피할 수 없으면 즐겨라'라는 명언을 남긴 사람은
@@ -37,6 +38,24 @@ JSON 배열로만 답해. 예: ["첫 줄\\n둘째 줄", "..."]"""
 
 
 def ask(n, used):
+    """잠깐 붐비면(503·429) 기다렸다 다시, 그래도 안 되면 다른 모델로."""
+    global MODEL
+    last = None
+    for model in MODELS:
+        for wait in (0, 20, 60):
+            time.sleep(wait)
+            try:
+                MODEL = model
+                return ask_once(n, used)
+            except urllib.error.HTTPError as e:
+                last = e
+                print(f"{model}: {e.code} — 다시 시도")
+                if e.code not in (429, 500, 503):
+                    break
+    raise last
+
+
+def ask_once(n, used):
     body = {"contents": [{"parts": [{"text": PROMPT.format(n=n, examples=EXAMPLES, used=used or "(없음)")}]}],
             "generationConfig": {"responseMimeType": "application/json"}}
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent?key={KEY}"
