@@ -1,0 +1,39 @@
+name: 힐끔 유머 글 자동 업로드
+
+on:
+  schedule:
+    - cron: "*/10 3 * * *"   # 한국시간 낮 12시대
+    - cron: "15,45 4 * * *"  # 1시대 따라잡기
+    - cron: "*/10 12 * * *"  # 한국시간 밤 9시대
+    - cron: "15,45 13 * * *" # 10시대 따라잡기
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "check(연결 확인) / now(지금 1개 올리기) / run"
+        default: check
+
+permissions:
+  contents: write
+
+concurrency:
+  group: peek
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 올리기
+        env:
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+        run: python scripts/post.py "${{ github.event.inputs.mode || 'run' }}"
+      - name: 결과 저장
+        run: |
+          git config user.name "peek-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add queue.json
+          if ! git diff --cached --quiet; then
+            git commit -m "업로드 기록 ($(TZ=Asia/Seoul date '+%m-%d %H:%M'))"
+            for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
+          fi
