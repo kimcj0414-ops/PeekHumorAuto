@@ -42,16 +42,19 @@ def ask(n, used):
     global MODEL
     last = None
     for model in MODELS:
-        for wait in (0, 20, 60):
+        for wait in (0, 15):
             time.sleep(wait)
             try:
                 MODEL = model
                 return ask_once(n, used)
             except urllib.error.HTTPError as e:
                 last = e
-                print(f"{model}: {e.code} — 다시 시도")
+                print(f"{model}: {e.code} {e.read().decode()[:150]} — 다시 시도")
                 if e.code not in (429, 500, 503):
                     break
+            except Exception as e:  # 시간 초과 등
+                last = e
+                print(f"{model}: {type(e).__name__} — 다시 시도")
     raise last
 
 
@@ -60,7 +63,7 @@ def ask_once(n, used):
             "generationConfig": {"responseMimeType": "application/json"}}
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent?key={KEY}"
     req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=120) as r:
+    with urllib.request.urlopen(req, timeout=90) as r:
         data = json.loads(r.read())
     text = data["candidates"][0]["content"]["parts"][0]["text"]
     text = re.sub(r"^```(json)?|```$", "", text.strip()).strip()
