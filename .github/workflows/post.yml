@@ -6,7 +6,7 @@ on:
     - cron: "15,45 4 * * *"  # 1시대 따라잡기
     - cron: "*/10 12 * * *"  # 한국시간 밤 9시대
     - cron: "15,45 13 * * *" # 10시대 따라잡기
-    - cron: "7 0 * * *"      # 아침 9시 7분: 대기 글이 6개 미만이면 제미나이로 초안 12개 만들기
+    - cron: "7 6 * * *"      # 오후 3시 7분(덜 붐비는 시간): 대기 글이 6개 미만이면 제미나이로 초안 12개 만들기
   workflow_dispatch:
     inputs:
       mode:
@@ -31,7 +31,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           MODE="${{ github.event.inputs.mode || 'run' }}"
-          if [ "${{ github.event.schedule }}" = "7 0 * * *" ]; then MODE=generate_auto; fi
+          if [ "${{ github.event.schedule }}" = "7 6 * * *" ]; then MODE=generate_auto; fi
           case "$MODE" in
             generate) python scripts/generate.py 12 force ;;
             generate_auto) python scripts/generate.py 12 ;;
