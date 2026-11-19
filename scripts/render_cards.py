@@ -79,15 +79,15 @@ svg{{position:absolute;inset:0}}
 .final .q{{font-size:74px}}
 .rule{{width:64px;height:3px;background:#d9b47c;margin:44px 0 30px}}
 .d{{font-size:36px;font-weight:400;line-height:1.6;color:#e2d8c6;word-break:keep-all;text-shadow:0 2px 12px rgba(0,0,0,.6)}}
-.cta{{position:absolute;left:96px;bottom:150px;font-size:34px;font-weight:600;color:#e8c48c;letter-spacing:.01em}}
+.cta{{margin-top:56px;font-size:34px;font-weight:600;color:#e8c48c;letter-spacing:.01em}}
 .brand{{position:absolute;right:96px;bottom:70px;font-size:30px;font-weight:500;color:#cdbfa8;letter-spacing:.06em}}
 </style></head><body class="{big}">
-<svg viewBox="0 0 {W} {H}" width="{W}" height="{H}"><defs><filter id="b"><feGaussianBlur stdDeviation="14"/></filter></defs>{SCENES[card['scene']]}</svg>
+<svg viewBox="0 0 {W} {H}" width="{W}" height="{H}"><defs><filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter></defs>{SCENES[card['scene']]}</svg>
 <div class="shade"></div>
 <svg class="grain" viewBox="0 0 {W} {H}"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="{i}"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
 <div class="txt"><div class="no">{i:02d} / {n:02d}</div><div class="label">{esc(card.get('label',''))}</div>
-<div class="q">{lines}</div>{'<div class="rule"></div><div class="d">'+desc+'</div>' if desc else ''}</div>
-{'<div class="cta">'+esc(card["cta"])+'</div>' if card.get("cta") else ''}<div class="brand">{BRAND}</div></body></html>"""
+<div class="q">{lines}</div>{'<div class="rule"></div><div class="d">'+desc+'</div>' if desc else ''}{'<div class="cta">'+esc(card['cta'])+'</div>' if card.get('cta') else ''}</div>
+<div class="brand">{BRAND}</div></body></html>"""
 
 
 CTA = "팔로우하고 하루 한 문장 만나요"
