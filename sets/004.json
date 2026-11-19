@@ -14,7 +14,7 @@
     "목소리를 높이지만",
     "남는 것은 허공뿐이다."
    ],
-   "scene": "station",
+   "scene": "mountain",
    "label": "침묵의 본질"
   },
   {
@@ -28,7 +28,7 @@
     "소리 없이 흐르듯",
     "참된 지혜는 조용하다."
    ],
-   "scene": "snow",
+   "scene": "tree",
    "label": ""
   },
   {
@@ -42,7 +42,7 @@
     "나를 이해하는 데",
     "써야 한다."
    ],
-   "scene": "tree",
+   "scene": "city",
    "label": ""
   },
   {
@@ -55,7 +55,7 @@
     "잔인한",
     "대답이 되기도 한다."
    ],
-   "scene": "lamp",
+   "scene": "path",
    "label": ""
   },
   {
@@ -64,7 +64,7 @@
     "애쓰지 마라.",
     "침묵이 곧 답이다."
    ],
-   "scene": "window",
+   "scene": "field",
    "label": "",
    "desc": []
   }

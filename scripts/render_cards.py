@@ -79,7 +79,7 @@ SCENES.update({
  "chair": """
   <rect width="1080" height="1350" fill="#0e0c0c"/>
   <line x1="760" y1="0" x2="760" y2="560" stroke="#222" stroke-width="3"/>
-  <circle cx="760" cy="580" r="26" fill="#ffd9a0"/><circle cx="760" cy="600" r="320" fill="#e9a65c" opacity=".16" filter="url(#b)"/>
+  <circle cx="760" cy="580" r="26" fill="#ffd9a0"/><defs><radialGradient id="chg"><stop offset="0" stop-color="#e9a65c" stop-opacity=".35"/><stop offset="1" stop-color="#e9a65c" stop-opacity="0"/></radialGradient></defs><circle cx="760" cy="600" r="420" fill="url(#chg)"/>
   <ellipse cx="760" cy="1240" rx="300" ry="40" fill="#e9a65c" opacity=".14" filter="url(#b)"/>
   <g fill="#040404"><rect x="660" y="900" width="200" height="22"/><rect x="660" y="740" width="18" height="182"/><rect x="842" y="740" width="18" height="182"/><rect x="660" y="740" width="200" height="16"/>
   <rect x="666" y="920" width="16" height="320"/><rect x="838" y="920" width="16" height="320"/></g>""",
@@ -94,13 +94,13 @@ SCENES.update({
   <defs><radialGradient id="mh" cx="50%" cy="50%" r="50%"><stop offset=".4" stop-color="#efe3c6" stop-opacity=".22"/><stop offset="1" stop-color="#efe3c6" stop-opacity="0"/></radialGradient></defs>
   <rect width="1080" height="1350" fill="#090b12"/>
   <circle cx="720" cy="980" r="460" fill="url(#mh)"/><circle cx="720" cy="980" r="190" fill="#efe3c6"/>
-  <ellipse cx="520" cy="1150" rx="420" ry="70" fill="#0d0f17" opacity=".95" filter="url(#b)"/><ellipse cx="900" cy="1190" rx="300" ry="60" fill="#0d0f17" opacity=".9" filter="url(#b)"/>""",
+  <defs><radialGradient id="cl"><stop offset=".5" stop-color="#0b0d15" stop-opacity=".95"/><stop offset="1" stop-color="#0b0d15" stop-opacity="0"/></radialGradient></defs><ellipse cx="560" cy="1150" rx="520" ry="110" fill="url(#cl)"/><ellipse cx="920" cy="1200" rx="380" ry="90" fill="url(#cl)"/>""",
  # 밤 기차역 승강장
  "station": """
   <rect width="1080" height="1350" fill="#0b0c10"/>
   <polygon points="540,760 560,760 1080,1350 0,1350" fill="#16171d"/>
   <line x1="548" y1="760" x2="250" y2="1350" stroke="#c9a46e" stroke-opacity=".5" stroke-width="4"/><line x1="552" y1="760" x2="830" y2="1350" stroke="#c9a46e" stroke-opacity=".5" stroke-width="4"/>
-  """ + "".join(f'<circle cx="{560+ (i*i*9)}" cy="{700-i*28}" r="{4+i*3}" fill="#ffd79c" opacity=".9"/><circle cx="{560+(i*i*9)}" cy="{700-i*28}" r="{20+i*12}" fill="#ffc06a" opacity=".12" filter="url(#b)"/>' for i in range(1,8)),
+  """ + "".join(f'<line x1="{550+sx*int(460*t)}" y1="{760-int(80*t)}" x2="{550+sx*int(460*t)}" y2="{760+int(560*t)}" stroke="#050507" stroke-width="{2+int(8*t)}"/><circle cx="{550+sx*int(460*t)}" cy="{760-int(80*t)}" r="{2+int(9*t)}" fill="#ffe0a8"/>' for t in (0.15,0.3,0.5,0.75,1.0) for sx in (-1,1)),
  # 눈 내리는 길
  "snow": """
   <defs><linearGradient id="sn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0d14"/><stop offset="1" stop-color="#26303f"/></linearGradient></defs>
@@ -116,6 +116,12 @@ SCENES.update({
   <g stroke="#060608" stroke-linecap="round" fill="none"><path d="M760 1100 L760 860" stroke-width="22"/><path d="M760 960 L680 860 M760 920 L850 830 M760 880 L720 790 M760 870 L800 780 M680 860 L640 820 M850 830 L900 810" stroke-width="10"/></g>
   <circle cx="760" cy="800" r="140" fill="#060608" opacity=".9"/>"""
 })
+
+try:
+    from scenes_more import S as _MORE
+except ImportError:
+    import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); from scenes_more import S as _MORE
+SCENES.update(_MORE)
 
 
 def esc(t):

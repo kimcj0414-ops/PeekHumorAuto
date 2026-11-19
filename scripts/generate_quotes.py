@@ -10,6 +10,7 @@ KEY = os.environ.get("GEMINI_API_KEY", "")
 MODELS = [m for m in [os.environ.get("GEMINI_MODEL"), "gemini-flash-latest", "gemini-3.6-flash", "gemini-flash-lite-latest"] if m]
 from render_cards import SCENES as _SC
 SCENES = list(_SC)
+SCENE_KO = {"lamp":"어둠 속 가로등","window":"어두운 방 창문 빛","door":"문틈 빛","dusk":"해 질 녘 지평선","candle":"촛불","rain":"비 오는 창","sea":"달빛 바다","chair":"빈 의자와 전구","stairs":"빛이 내려오는 계단","moon":"구름 사이 달","station":"밤 기차역","snow":"눈 내리는 길","tree":"언덕 위 나무","lighthouse":"등대","boat":"노을 속 돛단배","bridge":"밤 다리","city":"밤 도시 불빛","alley":"좁은 골목 등불","desk":"책상 스탠드","book":"펼친 책","cup":"김 나는 찻잔","umbrella":"비 속 우산 쓴 사람","busstop":"밤 버스 정류장","booth":"불 켜진 공중전화","mountain":"새벽 산","field":"노을 들판","forest":"숲 사이 빛줄기","river":"굽이치는 강","desert":"별 아래 사막","stars":"은하수","aurora":"오로라","fireplace":"벽난로 불씨","clock":"벽시계","curtain":"커튼 사이 빛","corridor":"긴 복도 끝 빛","rooftop":"옥상에서 본 야경","lantern":"종이 등불","cliff":"절벽 끝 사람","swing":"빈 그네","path":"빛으로 이어진 징검다리"}
 PALETTE_ORDER = ["amber", "moon", "rose", "mist", "gold"]
 
 
@@ -23,8 +24,12 @@ def assign_backgrounds(s, prev_sets):
     for k, p in enumerate(prev_sets):
         for c in p.get("cards", []):
             last_use[c.get("scene")] = k
-    fresh = sorted([x for x in SCENES if x not in recent], key=lambda x: last_use.get(x, -1))
-    pool = fresh + sorted([x for x in SCENES if x not in fresh], key=lambda x: last_use.get(x, -1))
+    import random as _r
+    rnd = _r.Random(s.get("title", ""))
+    tie = {x: rnd.random() for x in SCENES}  # 똑같이 오래된 장면끼리는 무작위 순서
+    key = lambda x: (last_use.get(x, -1), tie[x])
+    fresh = sorted([x for x in SCENES if x not in recent], key=key)
+    pool = fresh + sorted([x for x in SCENES if x not in fresh], key=key)
     used = set()
     for c in s["cards"]:
         want = c.get("scene")
@@ -43,7 +48,7 @@ OUTPUT_RULE = """
 - 서로 다른 주제로 카드뉴스 {n}세트를 만든다. 아래 '이미 다룬 주제'와 겹치지 않게.
 - 카드 안 문장은 짧게: 큰 문장(lines)은 한 줄 13자 안팎, 2~5줄. 작은 설명(desc)은 0~3줄, 한 줄 16자 안팎. 5장째는 desc 없이 최종 명언만.
 - 큰 문장은 '~다'체 또는 명사로, 설명은 자연스러운 한국어로. 맞춤법·띄어쓰기 확인.
-- scene은 장마다 다르게, 다음 중에서 문장 뜻과 어울리게 고른다: lamp(어둠 속 가로등), window(어두운 방 창문 빛), door(문틈 빛), dusk(해 질 녘 지평선), candle(촛불), rain(비 오는 창), sea(달빛 바다), chair(빈 의자와 전구), stairs(빛이 내려오는 계단), moon(구름 사이 달), station(밤 기차역), snow(눈 내리는 길), tree(언덕 위 나무 한 그루).
+- scene은 장마다 다르게, 다음 중에서 문장 뜻과 어울리게 고른다: {scenes}
 - 실존 인물 이름, 출처 표기, 이모지 금지.
 
 [이미 다룬 주제]
@@ -91,7 +96,7 @@ def main():
     base = open("prompts/quote_prompt.md", encoding="utf-8").read()
     old = [json.load(open(f, encoding="utf-8")) for f in sorted(glob.glob("sets/*.json"))]
     used = "\n".join(f"- {o.get('title')} ({o.get('theme')})" for o in old) or "(없음)"
-    sets, model = ask(base + OUTPUT_RULE.format(n=n, used=used))
+    sets, model = ask(base + OUTPUT_RULE.format(n=n, used=used, scenes=", ".join(f"{k}({v})" for k, v in SCENE_KO.items())))
     from render_cards import render
     num = len(old)
     for s in sets:
