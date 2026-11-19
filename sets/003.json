@@ -13,7 +13,7 @@
     "막상 도달한 그곳엔",
     "아무도 없다."
    ],
-   "scene": "window",
+   "scene": "rain",
    "label": "성공의 대가"
   },
   {
@@ -27,7 +27,7 @@
     "내 삶을 통째로",
     "저당 잡혔다."
    ],
-   "scene": "lamp",
+   "scene": "sea",
    "label": ""
   },
   {
@@ -41,7 +41,7 @@
     "잃어버린 나를",
     "발견하게 된다."
    ],
-   "scene": "dusk",
+   "scene": "chair",
    "label": ""
   },
   {
@@ -54,7 +54,7 @@
     "스스로 가둔 그 방에서",
     "빠져나오지 못한다."
    ],
-   "scene": "door",
+   "scene": "stairs",
    "label": ""
   },
   {
@@ -63,7 +63,7 @@
     "나를 잃었다면",
     "그것은 실패다."
    ],
-   "scene": "candle",
+   "scene": "moon",
    "label": "",
    "desc": []
   }
@@ -77,5 +77,6 @@
   "#삶의의미"
  ],
  "status": "approved",
- "by": "gemini (gemini-flash-lite-latest)"
+ "by": "gemini (gemini-flash-lite-latest)",
+ "palette": "moon"
 }

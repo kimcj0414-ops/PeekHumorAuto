@@ -80,5 +80,6 @@
   "#사람사이"
  ],
  "status": "approved",
- "by": "gemini (gemini-flash-lite-latest)"
+ "by": "gemini (gemini-flash-lite-latest)",
+ "palette": "amber"
 }

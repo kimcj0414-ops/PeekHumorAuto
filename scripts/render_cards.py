@@ -9,6 +9,9 @@ W, H = 1080, 1350
 HERE = os.path.dirname(os.path.abspath(__file__))
 FONT = os.path.abspath(os.path.join(HERE, "..", "fonts", "NotoSerifKR.ttf"))
 BRAND = "스치듯 어른"
+# 세트마다 바꾸는 빛의 색 (장면 레이어에만 적용)
+PALETTES = {"amber": "none", "moon": "hue-rotate(185deg) saturate(.7)", "rose": "hue-rotate(-28deg) saturate(1.15)",
+            "mist": "hue-rotate(95deg) saturate(.45)", "gold": "hue-rotate(12deg) saturate(.8) brightness(1.05)"}
 
 SCENES = {
  # 어둠 속 가로등 하나
@@ -56,12 +59,69 @@ SCENES = {
   <ellipse cx="540" cy="1262" rx="230" ry="22" fill="#f0a75a" opacity=".12" filter="url(#b)"/>""",
 }
 
+SCENES.update({
+ # 비 오는 창
+ "rain": """
+  <defs><linearGradient id="rw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4150"/><stop offset="1" stop-color="#c88a4e"/></linearGradient></defs>
+  <rect width="1080" height="1350" fill="#0d0f14"/>
+  <rect x="560" y="480" width="420" height="640" fill="url(#rw)" opacity=".75"/>
+  <circle cx="820" cy="980" r="60" fill="#ffcf8a" opacity=".55" filter="url(#b)"/><circle cx="660" cy="900" r="36" fill="#ffd9a0" opacity=".4" filter="url(#b)"/>
+  """ + "".join(f'<line x1="{560+((i*53)%420)}" y1="{480+((i*97)%560)}" x2="{562+((i*53)%420)}" y2="{540+((i*97)%560)}" stroke="#e6edf5" stroke-opacity=".35" stroke-width="2"/>' for i in range(60)) + """
+  <rect x="764" y="480" width="12" height="640" fill="#0d0f14"/><rect x="560" y="790" width="420" height="12" fill="#0d0f14"/>""",
+ # 달빛 바다
+ "sea": """
+  <defs><linearGradient id="ss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07090f"/><stop offset=".7" stop-color="#1b2232"/><stop offset="1" stop-color="#2b3346"/></linearGradient></defs>
+  <rect width="1080" height="1350" fill="url(#ss)"/>
+  <circle cx="760" cy="760" r="70" fill="#f4e6c8"/><circle cx="760" cy="760" r="180" fill="#f4e6c8" opacity=".12" filter="url(#b)"/>
+  <rect x="0" y="960" width="1080" height="390" fill="#080a10"/>
+  """ + "".join(f'<rect x="{760-w//2}" y="{980+i*26}" width="{w}" height="5" rx="2" fill="#f4e6c8" opacity="{0.55-i*0.04:.2f}"/>' for i,w in enumerate([120,180,90,220,140,260,100,200,160,240,120,180])),
+ # 빈 의자와 전구
+ "chair": """
+  <rect width="1080" height="1350" fill="#0e0c0c"/>
+  <line x1="760" y1="0" x2="760" y2="560" stroke="#222" stroke-width="3"/>
+  <circle cx="760" cy="580" r="26" fill="#ffd9a0"/><circle cx="760" cy="600" r="320" fill="#e9a65c" opacity=".16" filter="url(#b)"/>
+  <ellipse cx="760" cy="1240" rx="300" ry="40" fill="#e9a65c" opacity=".14" filter="url(#b)"/>
+  <g fill="#040404"><rect x="660" y="900" width="200" height="22"/><rect x="660" y="740" width="18" height="182"/><rect x="842" y="740" width="18" height="182"/><rect x="660" y="740" width="200" height="16"/>
+  <rect x="666" y="920" width="16" height="320"/><rect x="838" y="920" width="16" height="320"/></g>""",
+ # 빛이 내려오는 계단
+ "stairs": """
+  <defs><linearGradient id="st" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c88c" stop-opacity=".55"/><stop offset="1" stop-color="#f6c88c" stop-opacity="0"/></linearGradient></defs>
+  <rect width="1080" height="1350" fill="#0c0b0e"/>
+  <polygon points="620,420 1080,420 1080,1350 300,1350" fill="url(#st)" opacity=".5" filter="url(#b)"/>
+  """ + "".join(f'<rect x="{300+i*40}" y="{1290-i*70}" width="{780-i*40}" height="{70}" fill="#{"151317" if i%2 else "1c191e"}"/>' for i in range(12)),
+ # 구름 사이 큰 달
+ "moon": """
+  <rect width="1080" height="1350" fill="#090b12"/>
+  <circle cx="720" cy="980" r="190" fill="#efe3c6"/><circle cx="720" cy="980" r="420" fill="#efe3c6" opacity=".1" filter="url(#b)"/>
+  <ellipse cx="520" cy="1150" rx="420" ry="70" fill="#0d0f17" opacity=".95" filter="url(#b)"/><ellipse cx="900" cy="1190" rx="300" ry="60" fill="#0d0f17" opacity=".9" filter="url(#b)"/>""",
+ # 밤 기차역 승강장
+ "station": """
+  <rect width="1080" height="1350" fill="#0b0c10"/>
+  <polygon points="540,760 560,760 1080,1350 0,1350" fill="#16171d"/>
+  <line x1="548" y1="760" x2="250" y2="1350" stroke="#c9a46e" stroke-opacity=".5" stroke-width="4"/><line x1="552" y1="760" x2="830" y2="1350" stroke="#c9a46e" stroke-opacity=".5" stroke-width="4"/>
+  """ + "".join(f'<circle cx="{560+ (i*i*9)}" cy="{700-i*28}" r="{4+i*3}" fill="#ffd79c" opacity=".9"/><circle cx="{560+(i*i*9)}" cy="{700-i*28}" r="{20+i*12}" fill="#ffc06a" opacity=".12" filter="url(#b)"/>' for i in range(1,8)),
+ # 눈 내리는 길
+ "snow": """
+  <defs><linearGradient id="sn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0d14"/><stop offset="1" stop-color="#26303f"/></linearGradient></defs>
+  <rect width="1080" height="1350" fill="url(#sn)"/>
+  <polygon points="520,880 560,880 900,1350 180,1350" fill="#d9dee6" opacity=".18"/>
+  <circle cx="540" cy="880" r="14" fill="#ffd9a0"/><circle cx="540" cy="880" r="120" fill="#ffd9a0" opacity=".15" filter="url(#b)"/>
+  """ + "".join(f'<circle cx="{(i*131)%1080}" cy="{(i*277)%1350}" r="{1+(i%4)}" fill="#fff" opacity="{0.25+(i%5)*0.1:.2f}"/>' for i in range(140)),
+ # 언덕 위 나무 한 그루
+ "tree": """
+  <defs><linearGradient id="tr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b0c14"/><stop offset=".75" stop-color="#3a2a2c"/><stop offset="1" stop-color="#b9714a"/></linearGradient></defs>
+  <rect width="1080" height="1350" fill="url(#tr)"/>
+  <path d="M0 1180 Q 540 1040 1080 1180 V1350 H0Z" fill="#060608"/>
+  <g stroke="#060608" stroke-linecap="round" fill="none"><path d="M760 1100 L760 860" stroke-width="22"/><path d="M760 960 L680 860 M760 920 L850 830 M760 880 L720 790 M760 870 L800 780 M680 860 L640 820 M850 830 L900 810" stroke-width="10"/></g>
+  <circle cx="760" cy="800" r="140" fill="#060608" opacity=".9"/>"""
+})
+
 
 def esc(t):
     return html.escape(t)
 
 
-def page(card, i, n):
+def page(card, i, n, palette="amber"):
     lines = "<br>".join(esc(l) for l in card["lines"])
     desc = "<br>".join(esc(l) for l in card.get("desc", []))
     big = "final" if i == n else ""
@@ -69,7 +129,7 @@ def page(card, i, n):
 @font-face{{font-family:S;src:url('file://{FONT}');font-weight:200 900}}
 *{{margin:0;padding:0;box-sizing:border-box}}
 body{{width:{W}px;height:{H}px;overflow:hidden;background:#000;font-family:S,serif;color:#f3ece0}}
-svg{{position:absolute;inset:0}}
+svg{{position:absolute;inset:0}}\n.scene{{filter:{PALETTES.get(palette, "none")}}}
 .shade{{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.35) 45%,rgba(0,0,0,0) 70%),radial-gradient(120% 90% at 50% 45%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%)}}
 .grain{{position:absolute;inset:0;opacity:.09;mix-blend-mode:overlay}}
 .txt{{position:absolute;left:96px;right:96px;top:120px}}
@@ -82,7 +142,7 @@ svg{{position:absolute;inset:0}}
 .cta{{margin-top:56px;font-size:34px;font-weight:600;color:#e8c48c;letter-spacing:.01em}}
 .brand{{position:absolute;right:96px;bottom:70px;font-size:30px;font-weight:500;color:#cdbfa8;letter-spacing:.06em}}
 </style></head><body class="{big}">
-<svg viewBox="0 0 {W} {H}" width="{W}" height="{H}"><defs><filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter></defs>{SCENES[card['scene']]}</svg>
+<svg class="scene" viewBox="0 0 {W} {H}" width="{W}" height="{H}"><defs><filter id="b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter></defs>{SCENES[card['scene']]}</svg>
 <div class="shade"></div>
 <svg class="grain" viewBox="0 0 {W} {H}"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="{i}"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
 <div class="txt"><div class="no">{i:02d} / {n:02d}</div><div class="label">{esc(card.get('label',''))}</div>
@@ -105,7 +165,7 @@ def render(src, outdir):
         pg = b.new_page(viewport={"width": W, "height": H})
         for i, c in enumerate(cards, 1):
             tmp = os.path.join(outdir, f"_card{i}.html")
-            open(tmp, "w", encoding="utf-8").write(page(c, i, len(cards)))
+            open(tmp, "w", encoding="utf-8").write(page(c, i, len(cards), data.get("palette", "amber")))
             pg.goto("file://" + os.path.abspath(tmp))
             pg.evaluate("document.fonts.ready")
             pg.wait_for_timeout(300)

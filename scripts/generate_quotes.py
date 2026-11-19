@@ -8,7 +8,34 @@ import glob, json, os, re, sys, time, urllib.error, urllib.request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 KEY = os.environ.get("GEMINI_API_KEY", "")
 MODELS = [m for m in [os.environ.get("GEMINI_MODEL"), "gemini-flash-latest", "gemini-3.6-flash", "gemini-flash-lite-latest"] if m]
-SCENES = ["lamp", "window", "door", "dusk", "candle"]
+from render_cards import SCENES as _SC
+SCENES = list(_SC)
+PALETTE_ORDER = ["amber", "moon", "rose", "mist", "gold"]
+
+
+def assign_backgrounds(s, prev_sets):
+    """글(세트)마다 배경이 겹치지 않게: 바로 앞 2세트에서 쓴 장면은 빼고, 오래 안 쓴 장면부터.
+    제미나이가 고른 장면이 쓸 수 있는 것이면 우선 존중. 빛 색(palette)도 세트마다 바꿈."""
+    recent = []
+    for p in prev_sets[-2:]:
+        recent += [c.get("scene") for c in p.get("cards", [])]
+    last_use = {}
+    for k, p in enumerate(prev_sets):
+        for c in p.get("cards", []):
+            last_use[c.get("scene")] = k
+    fresh = sorted([x for x in SCENES if x not in recent], key=lambda x: last_use.get(x, -1))
+    pool = fresh + sorted([x for x in SCENES if x not in fresh], key=lambda x: last_use.get(x, -1))
+    used = set()
+    for c in s["cards"]:
+        want = c.get("scene")
+        if want in fresh and want not in used:
+            c["scene"] = want
+        else:
+            c["scene"] = next(x for x in pool if x not in used)
+        used.add(c["scene"])
+    prev_pal = prev_sets[-1].get("palette") if prev_sets else None
+    nxt = PALETTE_ORDER[(PALETTE_ORDER.index(prev_pal) + 1) % len(PALETTE_ORDER)] if prev_pal in PALETTE_ORDER else PALETTE_ORDER[len(prev_sets) % len(PALETTE_ORDER)]
+    s["palette"] = nxt
 
 OUTPUT_RULE = """
 
@@ -16,7 +43,7 @@ OUTPUT_RULE = """
 - 서로 다른 주제로 카드뉴스 {n}세트를 만든다. 아래 '이미 다룬 주제'와 겹치지 않게.
 - 카드 안 문장은 짧게: 큰 문장(lines)은 한 줄 13자 안팎, 2~5줄. 작은 설명(desc)은 0~3줄, 한 줄 16자 안팎. 5장째는 desc 없이 최종 명언만.
 - 큰 문장은 '~다'체 또는 명사로, 설명은 자연스러운 한국어로. 맞춤법·띄어쓰기 확인.
-- scene은 장마다 다르게, 다음 중에서 고른다: lamp(어둠 속 가로등), window(어두운 방 창문 빛), door(문틈 빛), dusk(해 질 녘 지평선), candle(촛불). 문장 뜻과 어울리게.
+- scene은 장마다 다르게, 다음 중에서 문장 뜻과 어울리게 고른다: lamp(어둠 속 가로등), window(어두운 방 창문 빛), door(문틈 빛), dusk(해 질 녘 지평선), candle(촛불), rain(비 오는 창), sea(달빛 바다), chair(빈 의자와 전구), stairs(빛이 내려오는 계단), moon(구름 사이 달), station(밤 기차역), snow(눈 내리는 길), tree(언덕 위 나무 한 그루).
 - 실존 인물 이름, 출처 표기, 이모지 금지.
 
 [이미 다룬 주제]
@@ -71,9 +98,8 @@ def main():
         if not ok(s):
             print("형식이 맞지 않아 건너뜀:", s.get("title")); continue
         num += 1
-        for i, c in enumerate(s["cards"]):
-            if c.get("scene") not in SCENES:
-                c["scene"] = SCENES[i]
+        prev = [json.load(open(f, encoding="utf-8")) for f in sorted(glob.glob("sets/*.json"))]
+        assign_backgrounds(s, [p for p in prev if p.get("status") != "sample"])
         s["cards"][0]["label"] = s.get("title", "")
         for c in s["cards"][1:]:
             c["label"] = ""

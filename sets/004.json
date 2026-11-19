@@ -14,7 +14,7 @@
     "목소리를 높이지만",
     "남는 것은 허공뿐이다."
    ],
-   "scene": "dusk",
+   "scene": "station",
    "label": "침묵의 본질"
   },
   {
@@ -28,7 +28,7 @@
     "소리 없이 흐르듯",
     "참된 지혜는 조용하다."
    ],
-   "scene": "lamp",
+   "scene": "snow",
    "label": ""
   },
   {
@@ -42,7 +42,7 @@
     "나를 이해하는 데",
     "써야 한다."
    ],
-   "scene": "window",
+   "scene": "tree",
    "label": ""
   },
   {
@@ -55,7 +55,7 @@
     "잔인한",
     "대답이 되기도 한다."
    ],
-   "scene": "door",
+   "scene": "lamp",
    "label": ""
   },
   {
@@ -64,7 +64,7 @@
     "애쓰지 마라.",
     "침묵이 곧 답이다."
    ],
-   "scene": "candle",
+   "scene": "window",
    "label": "",
    "desc": []
   }
@@ -78,5 +78,6 @@
   "#철학"
  ],
  "status": "approved",
- "by": "gemini (gemini-flash-lite-latest)"
+ "by": "gemini (gemini-flash-lite-latest)",
+ "palette": "rose"
 }
