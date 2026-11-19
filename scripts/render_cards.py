@@ -91,8 +91,9 @@ SCENES.update({
   """ + "".join(f'<rect x="{300+i*40}" y="{1290-i*70}" width="{780-i*40}" height="{70}" fill="#{"151317" if i%2 else "1c191e"}"/>' for i in range(12)),
  # 구름 사이 큰 달
  "moon": """
+  <defs><radialGradient id="mh" cx="50%" cy="50%" r="50%"><stop offset=".4" stop-color="#efe3c6" stop-opacity=".22"/><stop offset="1" stop-color="#efe3c6" stop-opacity="0"/></radialGradient></defs>
   <rect width="1080" height="1350" fill="#090b12"/>
-  <circle cx="720" cy="980" r="190" fill="#efe3c6"/><circle cx="720" cy="980" r="420" fill="#efe3c6" opacity=".1" filter="url(#b)"/>
+  <circle cx="720" cy="980" r="460" fill="url(#mh)"/><circle cx="720" cy="980" r="190" fill="#efe3c6"/>
   <ellipse cx="520" cy="1150" rx="420" ry="70" fill="#0d0f17" opacity=".95" filter="url(#b)"/><ellipse cx="900" cy="1190" rx="300" ry="60" fill="#0d0f17" opacity=".9" filter="url(#b)"/>""",
  # 밤 기차역 승강장
  "station": """
