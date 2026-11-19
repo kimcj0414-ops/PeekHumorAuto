@@ -36,3 +36,5 @@
   - 장면 종류: lamp(가로등) window(창문 빛) door(문틈 빛) dusk(해 질 녘) candle(촛불)
 - 첫 승인 세트: sets/001-later.json ('나중에'라는 말의 정체)
 - 모든 세트는 사용자 검수 후에만 업로드.
+- 문장 작성은 **제미나이**가 한다 (2026-11-19 결정). scripts/generate_quotes.py, 워크플로 '스치듯 어른 명언 초안 만들기'(수동 실행).
+  - 결과는 status=draft. 사용자가 검수해 approved 로 바꾼 것만 올린다. sets/001-later 는 Claude가 쓴 시안(sample)이라 올리지 않는다.

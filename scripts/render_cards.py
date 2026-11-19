@@ -112,6 +112,13 @@ def render(src, outdir):
             pg.screenshot(path=os.path.join(outdir, f"card_{i}.png"))
             os.remove(tmp)
         b.close()
+    from PIL import Image
+    ims = [Image.open(os.path.join(outdir, f"card_{i}.png")).convert("RGB") for i in range(1, len(cards) + 1)]
+    sw = 360; sh = int(sw * H / W); pad = 14
+    sheet = Image.new("RGB", (pad + len(ims) * (sw + pad), sh + 2 * pad), "#BBBBBB")
+    for i, im in enumerate(ims):
+        sheet.paste(im.resize((sw, sh)), (pad + i * (sw + pad), pad))
+    sheet.save(os.path.join(outdir, "preview.png"), optimize=True)
     print("완료", outdir)
 
 
